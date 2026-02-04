@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EventHub - Gestor de Eventos y Recordatorios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Backgrounds */
+      --bg-primary: #F8F9FA;
+      --bg-surface: #FFFFFF;
+      --bg-highlight: #EFF6FF;
+      --bg-warning: #FEF3C7;
+      --bg-danger: #FECACA;
+      
+      /* Text */
+      --text-primary: #18181B;
+      --text-secondary: #71717A;
+      --text-tertiary: #A1A1AA;
+      --text-muted: #D4D4D8;
+      --text-on-accent: #FFFFFF;
+      
+      /* Borders */
+      --border-default: #E4E4E7;
+      --border-thickness: 1.5px;
+      --divider-thickness: 1px;
+      
+      /* Accent */
+      --accent-primary: #2563EB;
+      --accent-light: #EFF6FF;
+      --warning: #EAB308;
+      --warning-dark: #B45309;
+      --danger: #991B1B;
+      
+      /* Spacing */
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 12px;
+      --spacing-lg: 16px;
+      --spacing-xl: 20px;
+      --spacing-2xl: 24px;
+      --spacing-3xl: 32px;
+      
+      /* Radius */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      
+      /* Font */
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--bg-primary);
+      min-height: 100vh;
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Layout */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--bg-surface);
+      border-right: var(--border-thickness) solid var(--border-default);
+      padding: var(--spacing-2xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-2xl);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .logo-icon {
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .brand-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .nav-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-primary);
+    }
+
+    .nav-item.active {
+      background: var(--accent-primary);
+      color: var(--text-on-accent);
+    }
+
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: var(--spacing-3xl);
+      overflow-y: auto;
+    }
+
+    .content-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-2xl);
+    }
+
+    /* Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+    }
+
+    .page-subtitle {
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    /* Search Box */
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: 0 var(--spacing-lg);
+      width: 320px;
+      height: 48px;
+      border: var(--border-thickness) solid var(--border-default);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      background: transparent;
+      flex: 1;
+      font-size: 15px;
+      font-family: var(--font-family);
+      color: var(--text-primary);
+    }
+
+    .search-box input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .search-icon {
+      width: 18px;
+      height: 18px;
+      color: var(--text-tertiary);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-md) var(--spacing-xl);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-family);
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--accent-primary);
+      color: var(--text-on-accent);
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: var(--border-thickness) solid var(--border-default);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-primary);
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--spacing-lg);
+    }
+
+    .stat-card {
+      background: var(--bg-surface);
+      border: var(--border-thickness) solid var(--border-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-2xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+
+    .stat-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .stat-trend {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .stat-trend svg {
+      width: 14px;
+      height: 14px;
+      color: var(--accent-primary);
+    }
+
+    .stat-trend-text {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent-primary);
+    }
+
+    /* Section */
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .view-all-link {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--accent-primary);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .view-all-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Card */
+    .card {
+      background: var(--bg-surface);
+      border: var(--border-thickness) solid var(--border-default);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    /* Event Row */
+    .event-row {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-lg);
+      padding: var(--spacing-xl);
+    }
+
+    .event-row:not(:last-child) {
+      border-bottom: var(--divider-thickness) solid var(--border-default);
+    }
+
+    .event-status {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .event-status.completed {
+      background: var(--accent-primary);
+    }
+
+    .event-status.in-progress {
+      background: var(--accent-light);
+      border: 2px solid var(--accent-primary);
+      position: relative;
+    }
+
+    .event-status.in-progress::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+    }
+
+    .event-status.pending {
+      border: var(--border-thickness) solid var(--border-default);
+    }
+
+    .event-status svg {
+      width: 16px;
+      height: 16px;
+      color: var(--text-on-accent);
+    }
+
+    .event-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+    }
+
+    .event-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .event-title.muted {
+      color: var(--text-tertiary);
+    }
+
+    .event-meta {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .event-meta.active {
+      font-weight: 500;
+      color: var(--accent-primary);
+    }
+
+    .event-meta.muted {
+      color: var(--text-tertiary);
+    }
+
+    /* Badge */
+    .badge {
+      padding: 6px 12px;
+      border-radius: var(--radius-xl);
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-info {
+      background: var(--accent-light);
+      color: var(--accent-primary);
+    }
+
+    .badge-warning {
+      background: var(--bg-warning);
+      color: var(--warning-dark);
+    }
+
+    .badge-danger {
+      background: var(--bg-danger);
+      color: var(--danger);
+    }
+
+    /* Two Column Layout */
+    .two-column {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: var(--spacing-lg);
+    }
+
+    /* Action Card */
+    .action-card {
+      background: var(--bg-surface);
+      border: var(--border-thickness) solid var(--border-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-2xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+    }
+
+    .action-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: var(--spacing-md) var(--spacing-lg);
+      border: var(--border-thickness) solid var(--border-default);
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      background: var(--bg-primary);
+      border-color: var(--accent-primary);
+    }
+
+    .action-btn svg {
+      width: 20px;
+      height: 20px;
+      color: var(--accent-primary);
+    }
+
+    /* Reminder List */
+    .reminder-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .reminder-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: var(--spacing-lg);
+      border: var(--divider-thickness) solid var(--border-default);
+      border-radius: var(--radius-md);
+    }
+
+    .reminder-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--warning);
+      flex-shrink: 0;
+    }
+
+    .reminder-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .reminder-event {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .reminder-time {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* Form Styles */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .form-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .form-input {
+      padding: var(--spacing-md) var(--spacing-lg);
+      border: var(--border-thickness) solid var(--border-default);
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-family: var(--font-family);
+      color: var(--text-primary);
+      background: var(--bg-surface);
+      transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    textarea.form-input {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-2xl);
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      padding: var(--spacing-2xl);
+      border-bottom: var(--divider-thickness) solid var(--border-default);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    .modal-body {
+      padding: var(--spacing-2xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+    }
+
+    .modal-footer {
+      padding: var(--spacing-2xl);
+      border-top: var(--divider-thickness) solid var(--border-default);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--spacing-md);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 240px;
+      }
+
+      .main-content {
+        padding: var(--spacing-2xl);
+      }
+
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-row {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .app-container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: var(--border-thickness) solid var(--border-default);
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-lg);
+      }
+
+      .header-right {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo-area">
+        <span class="logo-icon">📅</span>
+        <span class="brand-name">EventHub</span>
+      </div>
+      
+      <nav class="nav-section">
+        <a href="#" class="nav-item active" onclick="showDashboard(); return false;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showEvents(); return false;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          <span>Eventos</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showParticipants(); return false;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+          <span>Participantes</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showReminders(); return false;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+          <span>Recordatorios</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Dashboard View -->
+      <div class="content-wrapper" id="dashboard-view">
+        <!-- Dashboard Header -->
+        <div class="page-header">
+          <div class="header-left">
+            <h1 class="page-title">Dashboard de Eventos</h1>
+            <p class="page-subtitle">Gestiona todos tus eventos en un solo lugar</p>
+          </div>
+          <div class="header-right">
+            <div class="search-box">
+              <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              <input type="text" placeholder="Buscar eventos..." id="searchInput">
+            </div>
+            <button class="btn btn-primary" onclick="openNewEventModal()">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>Nuevo Evento</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-value" id="totalEvents">0</div>
+            <div class="stat-label">Eventos Activos</div>
+            <div class="stat-trend">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+              <span class="stat-trend-text">+12% este mes</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-value" id="totalParticipants">0</div>
+            <div class="stat-label">Participantes</div>
+            <div class="stat-trend">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+              <span class="stat-trend-text">+8% este mes</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-value" id="activeReminders">0</div>
+            <div class="stat-label">Recordatorios Activos</div>
+            <div class="stat-trend">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+              <span class="stat-trend-text">3 próximos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Events Section -->
+        <div class="section">
+          <div class="section-header">
+            <h2 class="section-title">Próximos Eventos</h2>
+            <a href="#" class="view-all-link" onclick="showEvents(); return false;">Ver todos</a>
+          </div>
+          <div class="card">
+            <div id="eventsList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Events View -->
+      <div class="content-wrapper" id="events-view" style="display: none;">
+        <div class="page-header">
+          <div class="header-left">
+            <h1 class="page-title">Gestión de Eventos</h1>
+            <p class="page-subtitle">Administra todos tus eventos</p>
+          </div>
+          <div class="header-right">
+            <button class="btn btn-primary" onclick="openNewEventModal()">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>Nuevo Evento</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="card">
+            <div style="padding: var(--spacing-xl);">
+              <h3 style="margin-bottom: var(--spacing-lg); font-size: 18px; font-weight: 600;">Todos los Eventos</h3>
+              <div id="eventsTable" style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                  <thead>
+                    <tr style="border-bottom: var(--border-thickness) solid var(--border-default); height: 48px;">
+                      <th style="text-align: left; padding: var(--spacing-md); font-weight: 600; color: var(--text-secondary); font-size: 14px;">Evento</th>
+                      <th style="text-align: left; padding: var(--spacing-md); font-weight: 600; color: var(--text-secondary); font-size: 14px;">Fecha</th>
+                      <th style="text-align: left; padding: var(--spacing-md); font-weight: 600; color: var(--text-secondary); font-size: 14px;">Ubicación</th>
+                      <th style="text-align: center; padding: var(--spacing-md); font-weight: 600; color: var(--text-secondary); font-size: 14px;">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="eventsTableBody">
+                    <tr><td colspan="4" style="padding: var(--spacing-2xl); text-align: center; color: var(--text-tertiary);">Cargando eventos...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Participants View -->
+      <div class="content-wrapper" id="participants-view" style="display: none;">
+        <div class="page-header">
+          <div class="header-left">
+            <h1 class="page-title">Gestión de Participantes</h1>
+            <p class="page-subtitle">Administra los participantes de tus eventos</p>
+          </div>
+        </div>
+
+        <div class="two-column">
+          <div class="action-card">
+            <div class="action-card-title">Agregar Participante</div>
+            <form>
+              <div class="form-group">
+                <label class="form-label" for="participantName">Nombre *</label>
+                <input type="text" id="participantName" class="form-input" placeholder="Nombre completo" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="participantEmail">Correo</label>
+                <input type="email" id="participantEmail" class="form-input" placeholder="correo@ejemplo.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="participantPhone">Teléfono</label>
+                <input type="tel" id="participantPhone" class="form-input" placeholder="+34 666 777 888">
+              </div>
+              <button type="button" class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="addParticipantFromForm()">Agregar</button>
+            </form>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <h2 class="section-title">Participantes por Evento</h2>
+            </div>
+            <div class="card">
+              <div id="participantsList" style="padding: var(--spacing-xl);">
+                <p style="color: var(--text-tertiary); text-align: center;">Selecciona un evento para ver participantes</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reminders View -->
+      <div class="content-wrapper" id="reminders-view" style="display: none;">
+        <div class="page-header">
+          <div class="header-left">
+            <h1 class="page-title">Gestión de Recordatorios</h1>
+            <p class="page-subtitle">Configura recordatorios para tus eventos</p>
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-value" id="remindersPending">0</div>
+            <div class="stat-label">Recordatorios Pendientes</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="remindersToday">0</div>
+            <div class="stat-label">Hoy</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="remindersWeek">0</div>
+            <div class="stat-label">Esta Semana</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-header">
+            <h2 class="section-title">Recordatorios Programados</h2>
+          </div>
+          <div class="card">
+            <div id="remindersList" style="padding: var(--spacing-xl);">
+              <p style="color: var(--text-tertiary); text-align: center;">No hay recordatorios pendientes</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: New Event -->
+  <div class="modal" id="newEventModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Nuevo Evento</h3>
+        <button class="modal-close" onclick="closeNewEventModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="eventForm">
+          <div class="form-group">
+            <label class="form-label" for="eventTitle">Título del Evento *</label>
+            <input type="text" id="eventTitle" class="form-input" placeholder="Ej: Reunión de equipo" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="eventDescription">Descripción</label>
+            <textarea id="eventDescription" class="form-input" placeholder="Describe los detalles del evento..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="eventDate">Fecha *</label>
+            <input type="date" id="eventDate" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="eventTime">Hora *</label>
+            <input type="time" id="eventTime" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="eventLocation">Ubicación</label>
+            <input type="text" id="eventLocation" class="form-input" placeholder="Ej: Sala de conferencias">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeNewEventModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveEvent()">Guardar Evento</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:5000/api';
+    let allEvents = [];
+    let allParticipants = [];
+    let allReminders = [];
+
+    // ===== UTILIDADES =====
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return date.toLocaleDateString('es-ES', options);
+    }
+
+    function formatDateTime(date, time) {
+      const dateObj = new Date(`${date}T${time}`);
+      return dateObj.toLocaleString('es-ES', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    }
+
+    function getEventStatus(date, time) {
+      const eventDate = new Date(`${date}T${time}`);
+      const now = new Date();
+      
+      if (eventDate < now) return { status: 'completed', label: 'Completado' };
+      if (eventDate.toDateString() === now.toDateString()) return { status: 'in-progress', label: 'Hoy' };
+      return { status: 'pending', label: 'Próximo' };
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 10);
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // ===== EVENTOS =====
+    async function loadEvents() {
+      try {
+        const response = await fetch(`${API_BASE}/events`);
+        allEvents = await response.json();
+        
+        document.getElementById('totalEvents').textContent = allEvents.length;
+        
+        const eventsList = document.getElementById('eventsList');
+        if (!eventsList) return;
+        
+        if (allEvents.length === 0) {
+          eventsList.innerHTML = `
+            <div class="event-row">
+              <div class="event-content">
+                <div class="event-title muted">No hay eventos registrados</div>
+                <div class="event-meta muted">Crea tu primer evento para comenzar</div>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        eventsList.innerHTML = allEvents.slice(0, 5).map(event => {
+          const { status: statusClass, label: statusLabel } = getEventStatus(event.date, event.time);
+          const statusIcon = statusClass === 'completed' 
+            ? '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>'
+            : '';
+          
+          const badgeClass = statusClass === 'completed' ? 'badge-info' : (statusClass === 'in-progress' ? 'badge-warning' : 'badge-info');
+          
+          return `
+            <div class="event-row" onclick="openEventDetails('${event.id}')">
+              <div class="event-status ${statusClass}">${statusIcon}</div>
+              <div class="event-content">
+                <div class="event-title">${event.title}</div>
+                <div class="event-meta">${formatDate(event.date)} a las ${event.time}${event.location ? ' • ' + event.location : ''}</div>
+              </div>
+              <span class="badge ${badgeClass}">${statusLabel}</span>
+            </div>
+          `;
+        }).join('');
+        
+      } catch (error) {
+        console.error('Error loading events:', error);
+        showToast('Error al cargar eventos', 'error');
+      }
+    }
+
+    async function saveEvent() {
+      const title = document.getElementById('eventTitle').value;
+      const description = document.getElementById('eventDescription').value;
+      const date = document.getElementById('eventDate').value;
+      const time = document.getElementById('eventTime').value;
+      const location = document.getElementById('eventLocation').value;
+
+      if (!title || !date || !time) {
+        showToast('Por favor completa los campos obligatorios', 'warning');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/events`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, description, date, time, location })
+        });
+
+        if (response.ok) {
+          closeNewEventModal();
+          loadEvents();
+          loadReminders();
+          showToast('Evento creado correctamente');
+        } else {
+          showToast('Error al crear el evento', 'error');
+        }
+      } catch (error) {
+        console.error('Error saving event:', error);
+        showToast('Error al guardar el evento', 'error');
+      }
+    }
+
+    async function deleteEvent(eventId) {
+      if (!confirm('¿Estás seguro de que deseas eliminar este evento?')) return;
+      
+      try {
+        const response = await fetch(`${API_BASE}/events/${eventId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          loadEvents();
+          showToast('Evento eliminado correctamente');
+        }
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        showToast('Error al eliminar el evento', 'error');
+      }
+    }
+
+    // ===== PARTICIPANTES =====
+    async function loadParticipants(eventId = null) {
+      try {
+        if (eventId) {
+          const response = await fetch(`${API_BASE}/events/${eventId}/participants`);
+          allParticipants = await response.json();
+        } else {
+          // Cargar todos los participantes de todos los eventos
+          let total = 0;
+          for (const event of allEvents) {
+            const response = await fetch(`${API_BASE}/events/${event.id}/participants`);
+            const participants = await response.json();
+            total += participants.length;
+          }
+          document.getElementById('totalParticipants').textContent = total;
+        }
+      } catch (error) {
+        console.error('Error loading participants:', error);
+      }
+    }
+
+    async function addParticipant(eventId) {
+      const name = document.getElementById('participantName').value;
+      const email = document.getElementById('participantEmail').value;
+      const phone = document.getElementById('participantPhone').value;
+
+      if (!name) {
+        showToast('El nombre es requerido', 'warning');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/events/${eventId}/participants`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, plannedParticipation: 0 })
+        });
+
+        if (response.ok) {
+          loadParticipants(eventId);
+          document.getElementById('participantName').value = '';
+          document.getElementById('participantEmail').value = '';
+          document.getElementById('participantPhone').value = '';
+          showToast('Participante agregado correctamente');
+        }
+      } catch (error) {
+        console.error('Error adding participant:', error);
+        showToast('Error al agregar participante', 'error');
+      }
+    }
+
+    async function updateParticipantStatus(participantId, status) {
+      try {
+        const response = await fetch(`${API_BASE}/participants/${participantId}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+
+        if (response.ok) {
+          showToast('Estado actualizado correctamente');
+        }
+      } catch (error) {
+        console.error('Error updating participant status:', error);
+        showToast('Error al actualizar estado', 'error');
+      }
+    }
+
+    async function deleteParticipant(participantId) {
+      if (!confirm('¿Eliminar este participante?')) return;
+      
+      try {
+        const response = await fetch(`${API_BASE}/participants/${participantId}/delete`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          showToast('Participante eliminado');
+        }
+      } catch (error) {
+        console.error('Error deleting participant:', error);
+        showToast('Error al eliminar participante', 'error');
+      }
+    }
+
+    // ===== RECORDATORIOS =====
+    async function loadReminders() {
+      try {
+        const response = await fetch(`${API_BASE}/reminders/pending`);
+        allReminders = await response.json();
+        document.getElementById('activeReminders').textContent = allReminders.length;
+      } catch (error) {
+        console.error('Error loading reminders:', error);
+      }
+    }
+
+    async function createReminder(eventId) {
+      const reminderDate = document.getElementById('reminderDate').value;
+      const reminderTime = document.getElementById('reminderTime').value;
+
+      if (!reminderDate || !reminderTime) {
+        showToast('Complete los campos de fecha y hora', 'warning');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/events/${eventId}/reminders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reminderDate, reminderTime })
+        });
+
+        if (response.ok) {
+          loadReminders();
+          showToast('Recordatorio creado');
+        }
+      } catch (error) {
+        console.error('Error creating reminder:', error);
+        showToast('Error al crear recordatorio', 'error');
+      }
+    }
+
+    // ===== MODALES =====
+    function openNewEventModal() {
+      document.getElementById('newEventModal').classList.add('active');
+    }
+
+    function closeNewEventModal() {
+      document.getElementById('newEventModal').classList.remove('active');
+      document.getElementById('eventForm').reset();
+    }
+
+    function openEventDetails(eventId) {
+      const event = allEvents.find(e => e.id === parseInt(eventId));
+      if (event) {
+        alert(`Evento: ${event.title}\nFecha: ${formatDate(event.date)}\nHora: ${event.time}\nUbicación: ${event.location || 'No especificada'}`);
+      }
+    }
+
+    // ===== NAVEGACIÓN =====
+    function setActiveNav(element) {
+      document.querySelectorAll('.nav-item').forEach(nav => {
+        nav.classList.remove('active');
+      });
+      element.classList.add('active');
+    }
+
+    function showView(viewId) {
+      document.querySelectorAll('[id$="-view"]').forEach(view => {
+        view.style.display = 'none';
+      });
+      const view = document.getElementById(viewId);
+      if (view) {
+        view.style.display = 'block';
+      }
+    }
+
+    function showDashboard() {
+      setActiveNav(event.currentTarget);
+      showView('dashboard-view');
+      loadEvents();
+      loadReminders();
+    }
+
+    function showEvents() {
+      setActiveNav(event.currentTarget);
+      showView('events-view');
+      loadEventsTable();
+    }
+
+    function showParticipants() {
+      setActiveNav(event.currentTarget);
+      showView('participants-view');
+      loadParticipants();
+    }
+
+    function showReminders() {
+      setActiveNav(event.currentTarget);
+      showView('reminders-view');
+      loadRemindersView();
+    }
+
+    // ===== VISTA DE EVENTOS TABLA =====
+    function loadEventsTable() {
+      const tbody = document.getElementById('eventsTableBody');
+      if (allEvents.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="padding: var(--spacing-2xl); text-align: center; color: var(--text-tertiary);">No hay eventos</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = allEvents.map(event => `
+        <tr style="border-bottom: var(--divider-thickness) solid var(--border-default); height: 56px;">
+          <td style="padding: var(--spacing-md);">
+            <div style="font-weight: 500; color: var(--text-primary);">${event.title}</div>
+            <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">${event.description || 'Sin descripción'}</div>
+          </td>
+          <td style="padding: var(--spacing-md); color: var(--text-secondary);">${formatDate(event.date)} ${event.time}</td>
+          <td style="padding: var(--spacing-md); color: var(--text-secondary);">${event.location || '-'}</td>
+          <td style="padding: var(--spacing-md); text-align: center;">
+            <button class="action-btn" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="editEvent('${event.id}')">Editar</button>
+            <button class="action-btn" style="width: auto; padding: 6px 12px; font-size: 12px; margin-left: 8px;" onclick="deleteEvent('${event.id}')">Eliminar</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function editEvent(eventId) {
+      const event = allEvents.find(e => e.id === parseInt(eventId));
+      if (!event) return;
+      
+      document.getElementById('eventTitle').value = event.title;
+      document.getElementById('eventDescription').value = event.description || '';
+      document.getElementById('eventDate').value = event.date;
+      document.getElementById('eventTime').value = event.time;
+      document.getElementById('eventLocation').value = event.location || '';
+      openNewEventModal();
+    }
+
+    // ===== PARTICIPANTES DESDE FORMULARIO =====
+    function addParticipantFromForm() {
+      if (allEvents.length === 0) {
+        showToast('Primero crea un evento', 'warning');
+        return;
+      }
+      
+      const eventId = allEvents[0].id;
+      addParticipant(eventId);
+    }
+
+    // ===== VISTA DE RECORDATORIOS =====
+    function loadRemindersView() {
+      const remindersList = document.getElementById('remindersList');
+      
+      if (allReminders.length === 0) {
+        remindersList.innerHTML = '<p style="color: var(--text-tertiary); text-align: center; padding: var(--spacing-2xl);">No hay recordatorios pendientes</p>';
+        return;
+      }
+
+      const today = new Date();
+      const oneWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+      
+      let todayCount = 0;
+      let weekCount = 0;
+
+      allReminders.forEach(reminder => {
+        const reminderDate = new Date(reminder.reminderDate);
+        if (reminderDate.toDateString() === today.toDateString()) todayCount++;
+        if (reminderDate <= oneWeekLater) weekCount++;
+      });
+
+      document.getElementById('remindersPending').textContent = allReminders.length;
+      document.getElementById('remindersToday').textContent = todayCount;
+      document.getElementById('remindersWeek').textContent = weekCount;
+
+      remindersList.innerHTML = `<div class="reminder-list">` + 
+        allReminders.map(reminder => `
+          <div class="reminder-item">
+            <div class="reminder-dot"></div>
+            <div class="reminder-content">
+              <div class="reminder-event">Recordatorio programado</div>
+              <div class="reminder-time">${formatDate(reminder.reminderDate)} a las ${reminder.reminderTime}</div>
+            </div>
+          </div>
+        `).join('') +
+      `</div>`;
+    }
+
+    // ===== BÚSQUEDA =====
+    function filterEvents(searchTerm) {
+      const eventsList = document.getElementById('eventsList');
+      if (!eventsList) return;
+
+      const filtered = allEvents.filter(event => 
+        event.title.toLowerCase().includes(searchTerm) ||
+        event.description?.toLowerCase().includes(searchTerm) ||
+        event.location?.toLowerCase().includes(searchTerm)
+      );
+
+      eventsList.innerHTML = filtered.map(event => {
+        const { status: statusClass, label: statusLabel } = getEventStatus(event.date, event.time);
+        const badgeClass = statusClass === 'completed' ? 'badge-info' : (statusClass === 'in-progress' ? 'badge-warning' : 'badge-info');
+        
+        return `
+          <div class="event-row" onclick="openEventDetails('${event.id}')">
+            <div class="event-status ${statusClass}"></div>
+            <div class="event-content">
+              <div class="event-title">${event.title}</div>
+              <div class="event-meta">${formatDate(event.date)} a las ${event.time}</div>
+            </div>
+            <span class="badge ${badgeClass}">${statusLabel}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ===== INICIALIZACIÓN =====
+    window.addEventListener('DOMContentLoaded', () => {
+      // Debug: Mostrar estado de conexión
+      console.log('🚀 EventHub iniciando...');
+      console.log('API Base:', API_BASE);
+
+      loadEvents();
+      loadReminders();
+      loadParticipants();
+
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          filterEvents(e.target.value.toLowerCase());
+        });
+      }
+
+      // Cerrar modal al hacer click fuera
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            modal.classList.remove('active');
+          }
+        });
+      });
+
+      // Debug: Verificar conexión cada 5 segundos
+      const debugInterval = setInterval(() => {
+        fetch(`${API_BASE}/events`)
+          .then(r => r.json())
+          .then(data => {
+            console.log('✓ API conectado. Eventos:', data.length);
+          })
+          .catch(e => {
+            console.warn('⚠ API desconectado:', e.message);
+          });
+      }, 5000);
+    });
+
+    // Actualizaciones automáticas cada 30 segundos
+    setInterval(() => {
+      loadEvents();
+      loadReminders();
+    }, 30000);
+  </script>
+
+  <style>
+    .toast {
+      position: fixed;
+      bottom: -100px;
+      right: var(--spacing-2xl);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      padding: var(--spacing-lg) var(--spacing-xl);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: bottom 0.3s ease;
+      z-index: 2000;
+      border-left: 4px solid var(--accent-primary);
+    }
+
+    .toast.show {
+      bottom: var(--spacing-2xl);
+    }
+
+    .toast-error {
+      border-left-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .toast-warning {
+      border-left-color: var(--warning);
+      color: var(--warning-dark);
+    }
+
+    .event-row {
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .event-row:hover {
+      background-color: var(--bg-primary);
+    }
+
+    /* Tabla mejorada */
+    table {
+      font-size: 14px;
+    }
+
+    table th {
+      font-weight: 600;
+      text-align: left;
+    }
+
+    table td {
+      height: 56px;
+      vertical-align: middle;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      font-size: 13px;
+      background: transparent;
+      color: var(--accent-primary);
+      border: var(--border-thickness) solid var(--border-default);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      background: var(--bg-primary);
+      border-color: var(--accent-primary);
+    }
+
+    /* Forma mejorada */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+    }
+
+    /* Validación visual */
+    .form-input:invalid {
+      border-color: var(--danger);
+    }
+
+    .form-input:focus:invalid {
+      box-shadow: 0 0 0 3px rgba(153, 27, 27, 0.1);
+    }
+  </style>
+</body>
+</html>

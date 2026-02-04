@@ -1,0 +1,48 @@
+# Dependencias
+node_modules/
+.venv/
+
+# Base de datos (opcional - descomentar si no quieres versionar la DB)
+# events.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Variables de entorno
+.env
+.env.local
+.env.*.local
+
+# Screenshots de prueba
+screenshot-*.png
+test-screenshot.png
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build
+dist/
+build/
+
+# Archivos temporales
+*.tmp
+*.temp
+.cache/
+
+# Playwright
+playwright/.auth/
+test-results/
+playwright-report/
