@@ -1,0 +1,4 @@
+OK default: job_id=5cec60f3-60e7-4da7-9ee4-6dd2d9db633c status=completed mode=default-pass-through duration=2.020000
+OK worker: job_id=955b1c80-b5b7-460c-ab32-647b2575d967 status=completed mode=external-worker duration=2.000000
+OK runtime faceswap API (2 escenarios)
+Resultados guardados en: test-results/faceswap-runtime
