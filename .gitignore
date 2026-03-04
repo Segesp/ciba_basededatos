@@ -51,3 +51,9 @@ playwright-report/
 !test-results/
 !test-results/faceswap-runtime/
 !test-results/faceswap-runtime/**
+!test-results/faceswap-runtime-user-image/
+!test-results/faceswap-runtime-user-image/**
+
+# FaceSwap runtime/generated
+storage/
+workers/models/

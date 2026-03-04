@@ -27,3 +27,4 @@ Prueba IA mejorada (InsightFace + InSwapper):
 - video usado: test-results/faceswap-runtime-user-image/Download_clip8_lowfps.mp4 (clip optimizado para calidad/tiempo en CPU)
 - resultado: test-results/faceswap-runtime-user-image/Resultado face.mp4 (duración: 8.000000 s)
 - modo: external-worker
+ia-best-gpu-check job_id=d3c77940-5d92-43f8-ac58-82899ea3f295 status=completed output=Resultado face.mp4

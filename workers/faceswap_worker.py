@@ -9,6 +9,7 @@ Uso:
 """
 
 import json
+import logging
 import os
 import shutil
 import subprocess
@@ -28,6 +29,23 @@ CAFFEMODEL_URL = 'https://raw.githubusercontent.com/opencv/opencv_3rdparty/dnn_s
 # ---------- InsightFace model ----------
 INSWAPPER_PATH = os.path.join(MODEL_DIR, 'inswapper_128_fp16.onnx')
 INSWAPPER_URL = 'https://huggingface.co/hacksider/deep-live-cam/resolve/main/inswapper_128_fp16.onnx'
+
+logging.basicConfig(level=logging.INFO, format='[faceswap-worker] %(message)s')
+
+
+def resolve_onnx_providers():
+    """
+    Prefiere CUDA si existe; de lo contrario usa CPU.
+    """
+    try:
+        import onnxruntime as ort
+    except Exception:
+        return ['CPUExecutionProvider']
+
+    available = ort.get_available_providers()
+    if 'CUDAExecutionProvider' in available:
+        return ['CUDAExecutionProvider', 'CPUExecutionProvider']
+    return ['CPUExecutionProvider']
 
 
 def ensure_file(path: str, url: str):
@@ -50,7 +68,11 @@ def mux_audio(temp_video: str, input_video: str, output_video: str):
         '-shortest',
         output_video
     ]
-    subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except FileNotFoundError:
+        # Entorno sin ffmpeg: preservamos video procesado sin audio
+        shutil.copyfile(temp_video, output_video)
 
 
 def try_insightface_swap(input_photo: str, input_video: str, output_video: str) -> bool:
@@ -63,9 +85,11 @@ def try_insightface_swap(input_photo: str, input_video: str, output_video: str) 
     try:
         ensure_file(INSWAPPER_PATH, INSWAPPER_URL)
 
-        app = FaceAnalysis(name='buffalo_l', providers=['CPUExecutionProvider'])
+        providers = resolve_onnx_providers()
+        logging.info('InsightFace providers=%s', providers)
+        app = FaceAnalysis(name='buffalo_l', providers=providers)
         app.prepare(ctx_id=0, det_size=(640, 640))
-        swapper = get_model(INSWAPPER_PATH, providers=['CPUExecutionProvider'])
+        swapper = get_model(INSWAPPER_PATH, providers=providers)
 
         src_img = cv2.imread(input_photo)
         if src_img is None:
@@ -99,12 +123,10 @@ def try_insightface_swap(input_photo: str, input_video: str, output_video: str) 
             if scale < 1.0:
                 proc = cv2.resize(frame, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
 
-            # acelerar en CPU: swap cada 2 frames para mantener tiempo razonable
-            if frame_idx % 2 == 0:
-                tgt_faces = app.get(proc)
-                if tgt_faces:
-                    tgt_face = max(tgt_faces, key=lambda f: (f.bbox[2] - f.bbox[0]) * (f.bbox[3] - f.bbox[1]))
-                    proc = swapper.get(proc, tgt_face, src_face, paste_back=True)
+            tgt_faces = app.get(proc)
+            if tgt_faces:
+                tgt_face = max(tgt_faces, key=lambda f: (f.bbox[2] - f.bbox[0]) * (f.bbox[3] - f.bbox[1]))
+                proc = swapper.get(proc, tgt_face, src_face, paste_back=True)
 
             if scale < 1.0:
                 frame = cv2.resize(proc, (w, h), interpolation=cv2.INTER_LINEAR)
@@ -120,7 +142,8 @@ def try_insightface_swap(input_photo: str, input_video: str, output_video: str) 
         if os.path.exists(temp_video):
             os.remove(temp_video)
         return True
-    except Exception:
+    except Exception as exc:
+        logging.info('InsightFace path failed, fallback OpenCV. reason=%s', exc)
         return False
 
 
