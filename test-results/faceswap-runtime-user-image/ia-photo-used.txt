@@ -1,0 +1,1 @@
+test-results/faceswap-runtime/foto_modelo.png

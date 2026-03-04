@@ -18,9 +18,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Rutas API
 const eventsRouter = require('./routes/events');
 const remindersRouter = require('./routes/reminders');
+const faceswapRouter = require('./routes/faceswap');
 
 app.use('/api/events', eventsRouter);
 app.use('/api/reminders', remindersRouter);
+app.use('/api', faceswapRouter);
 
 // Ruta para página principal
 app.get('/', (req, res) => {

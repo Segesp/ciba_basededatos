@@ -1,0 +1,29 @@
+OK default: job_id=acf62d5e-2577-47ca-9fb1-d319ff8b39ba status=completed mode=default-pass-through duration=2.020000
+OK worker: job_id=32634a59-0e57-4965-9849-aa19804d6842 status=completed mode=external-worker duration=2.000000
+OK runtime faceswap API (2 escenarios)
+Resultados guardados en: test-results/faceswap-runtime-user-image
+
+Prueba PNG->video: Resultado guardado como "Resultado face.mp4" (duración: 2.000000 s)
+
+Prueba con imágenes de main:
+- photo: test-results/faceswap-runtime/Captura de pantalla 2026-02-22 184259.png
+- guía: test-results/faceswap-runtime/Image (21).png
+- output: test-results/faceswap-runtime-user-image/Resultado face.mp4 (duración: 2.000000 s)
+
+Prueba IA real (worker DNN OpenCV):
+- photo usada: test-results/faceswap-runtime/Captura de pantalla 2026-02-22 184259.png
+- video usado: test-results/faceswap-runtime/asset-input.mp4
+- resultado: test-results/faceswap-runtime-user-image/Resultado face.mp4 (duración: 2.000000 s)
+- modo: external-worker
+
+Prueba IA real con archivos solicitados (rama work):
+- photo usada: test-results/faceswap-runtime/foto_modelo.png
+- video usado: test-results/faceswap-runtime/Download.mp4
+- output: test-results/faceswap-runtime-user-image/Resultado face.mp4 (duración: 19.033333 s)
+- modo: external-worker
+
+Prueba IA mejorada (InsightFace + InSwapper):
+- photo usada: test-results/faceswap-runtime/foto_modelo.png
+- video usado: test-results/faceswap-runtime-user-image/Download_clip8_lowfps.mp4 (clip optimizado para calidad/tiempo en CPU)
+- resultado: test-results/faceswap-runtime-user-image/Resultado face.mp4 (duración: 8.000000 s)
+- modo: external-worker
