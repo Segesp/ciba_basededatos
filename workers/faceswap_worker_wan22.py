@@ -93,6 +93,7 @@ def run_wan_ti2v(input_photo: str, input_video: str, output_video: str) -> None:
     num_steps = int(os.getenv("WAN_NUM_STEPS", "30"))
     guidance = float(os.getenv("WAN_GUIDANCE", "5.0"))
     fps = int(os.getenv("WAN_FPS", "24"))
+    max_side = int(os.getenv("WAN_MAX_SIDE", "384"))
 
     try:
         import torch
@@ -106,7 +107,10 @@ def run_wan_ti2v(input_photo: str, input_video: str, output_video: str) -> None:
         ) from exc
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    dtype = torch.float16 if device == "cuda" else torch.float32
+    if device == "cuda":
+        dtype = torch.float16
+    else:
+        dtype = torch.bfloat16 if hasattr(torch, "bfloat16") else torch.float16
 
     pipe = PipelineClass.from_pretrained(model_id, torch_dtype=dtype)
     pipe = pipe.to(device)
@@ -116,9 +120,15 @@ def run_wan_ti2v(input_photo: str, input_video: str, output_video: str) -> None:
 
     ref_image_path = extract_reference_image(input_photo, input_video)
     ref_image = Image.open(ref_image_path).convert("RGB")
+    w, h = ref_image.size
+    scale = min(1.0, float(max_side) / float(max(w, h)))
+    if scale < 1.0:
+        ref_image = ref_image.resize((int(w * scale), int(h * scale)))
 
     duration = video_duration_seconds(input_video)
-    num_frames = max(16, int(duration * fps))
+    num_frames = max(1, int(duration * fps))
+    # requisito WAN: (num_frames - 1) debe ser divisible por 4
+    num_frames = ((num_frames - 1) // 4) * 4 + 1
 
     result = pipe(
         image=ref_image,
