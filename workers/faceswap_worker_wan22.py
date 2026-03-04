@@ -10,12 +10,13 @@ Uso:
   python workers/faceswap_worker_wan22.py <payload.json>
 
 Variables opcionales:
-  WAN_MODEL_ID=Wan-AI/Wan2.2-TI2V-5B
+  WAN_MODEL_ID=Wan-AI/Wan2.2-TI2V-5B-Diffusers
   WAN_PROMPT="cinematic portrait video, natural face motion"
   WAN_NEGATIVE_PROMPT="blurry, low quality, artifacts, deformed face"
   WAN_NUM_STEPS=30
   WAN_GUIDANCE=5.0
   WAN_FPS=24
+  WAN_STRICT=1   # si 1, falla en lugar de hacer fallback
 """
 
 from __future__ import annotations
@@ -86,7 +87,7 @@ def extract_reference_image(input_photo: str, input_video: str) -> str:
 
 
 def run_wan_ti2v(input_photo: str, input_video: str, output_video: str) -> None:
-    model_id = os.getenv("WAN_MODEL_ID", "Wan-AI/Wan2.2-TI2V-5B")
+    model_id = os.getenv("WAN_MODEL_ID", "Wan-AI/Wan2.2-TI2V-5B-Diffusers")
     prompt = os.getenv("WAN_PROMPT", "close-up portrait video, realistic skin, natural facial motion, high quality")
     negative_prompt = os.getenv("WAN_NEGATIVE_PROMPT", "blurry, low quality, bad anatomy, artifacts, deformed")
     num_steps = int(os.getenv("WAN_NUM_STEPS", "30"))
@@ -97,11 +98,7 @@ def run_wan_ti2v(input_photo: str, input_video: str, output_video: str) -> None:
         import torch
         from PIL import Image
         from diffusers.utils import export_to_video
-        # Compatibilidad entre versiones de diffusers
-        try:
-            from diffusers import WanImageToVideoPipeline as PipelineClass
-        except Exception:
-            from diffusers import AutoPipelineForImage2Video as PipelineClass
+        from diffusers import WanImageToVideoPipeline as PipelineClass
     except Exception as exc:
         raise RuntimeError(
             "Faltan dependencias para Wan2.2 TI2V (torch/diffusers/Pillow). "
@@ -140,6 +137,9 @@ def run_wan_ti2v(input_photo: str, input_video: str, output_video: str) -> None:
     export_to_video(frames[0] if isinstance(frames, list) else frames, raw_video, fps=fps)
     mux_audio(raw_video, input_video, output_video)
 
+    backend_marker = output_video + ".backend.txt"
+    __FIX__
+
     if os.path.exists(raw_video):
         os.remove(raw_video)
     if os.path.exists(ref_image_path):
@@ -162,6 +162,8 @@ def main() -> None:
     payload_path = Path(sys.argv[1])
     payload = json.loads(payload_path.read_text(encoding="utf-8"))
 
+    strict_mode = os.getenv("WAN_STRICT", "0") == "1"
+
     try:
         run_wan_ti2v(
             payload["inputPhotoPath"],
@@ -169,6 +171,8 @@ def main() -> None:
             payload["outputPath"],
         )
     except Exception as exc:
+        if strict_mode:
+            raise
         # Fallback experimental: permite completar la prueba aunque WAN no esté disponible en el entorno
         print(f"[wan22-worker] WAN pipeline unavailable, using fallback worker: {exc}", file=sys.stderr)
         fallback_to_existing_faceswap_worker(str(payload_path))
