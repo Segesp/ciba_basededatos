@@ -243,6 +243,14 @@ FACESWAP_WORKER_CMD="python workers/faceswap_worker.py"
 
 El servidor le pasa un JSON con `inputPhotoPath`, `inputVideoPath` y `outputPath`.
 
+El worker incluido (`workers/faceswap_worker.py`) ahora aplica un faceswap simplificado con detección facial DNN (OpenCV) y blending por frame.
+
+Dependencias del worker IA:
+```bash
+pip install opencv-python-headless numpy
+```
+
+
 ### Prueba runtime de FaceSwap API
 
 Para validar arranque API, uploads reales y flujo end-to-end con `ffmpeg`:
