@@ -248,9 +248,7 @@ El worker incluido (`workers/faceswap_worker.py`) ahora intenta usar **InsightFa
 Dependencias del worker IA:
 ```bash
 pip install insightface onnxruntime opencv-python-headless numpy
-```
-
-
+``
 ### Prueba runtime de FaceSwap API
 
 Para validar arranque API, uploads reales y flujo end-to-end con `ffmpeg`:
