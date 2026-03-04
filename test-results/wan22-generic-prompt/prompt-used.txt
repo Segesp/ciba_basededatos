@@ -1,0 +1,4 @@
+WAN_MODEL_ID=Wan-AI/Wan2.2-TI2V-5B
+WAN_PROMPT=A person talking naturally to camera, cinematic lighting, stable face, generic portrait video
+WAN_NEGATIVE_PROMPT=blurry, distorted, artifacts, low quality
+JOB_ID=2d4ba5d1-ceae-49bd-b33a-666452f47dbd
