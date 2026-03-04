@@ -46,3 +46,8 @@ build/
 playwright/.auth/
 test-results/
 playwright-report/
+
+# Permitir evidencias runtime de FaceSwap
+!test-results/
+!test-results/faceswap-runtime/
+!test-results/faceswap-runtime/**

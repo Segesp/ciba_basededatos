@@ -216,3 +216,47 @@ Para reportar problemas o sugerencias, por favor abre un issue en el repositorio
 ---
 
 **Desarrollado con ❤️ para gestionar tus eventos de forma fácil y eficiente**
+
+## 🤖 Guía de IA (FaceSwap + video guía)
+
+Si quieres implementar un flujo de reemplazo facial con una foto de identidad y un video guía (estilo motion control), revisa: **`GUIA_FACESWAP_MOTION_CONTROL.md`**.
+
+## 🎬 API FaceSwap (foto + video guía)
+
+Se implementó una API base para ejecutar jobs asíncronos:
+
+- `POST /api/jobs/faceswap` (multipart/form-data)
+  - `photo`: imagen de referencia
+  - `video`: video guía
+  - opcionales: `identityStrength`, `temporalSmoothing`, `restoration`, `targetPerson`
+- `GET /api/jobs/:id` estado del job
+- `GET /api/jobs/:id/result` descarga el video resultante
+
+### Worker real de IA (opcional)
+Por defecto, el pipeline hace ingesta/transcodificación de video guía para dejar la integración lista.
+
+Para ejecutar un worker de IA real, configura la variable:
+
+```bash
+FACESWAP_WORKER_CMD="python workers/faceswap_worker.py"
+```
+
+El servidor le pasa un JSON con `inputPhotoPath`, `inputVideoPath` y `outputPath`.
+
+### Prueba runtime de FaceSwap API
+
+Para validar arranque API, uploads reales y flujo end-to-end con `ffmpeg`:
+
+```bash
+./scripts/test-faceswap-runtime.sh
+```
+
+Para guardar evidencias (JSON, logs y MP4) en una carpeta:
+
+```bash
+RESULTS_DIR=test-results/faceswap-runtime ./scripts/test-faceswap-runtime.sh
+```
+
+La prueba ejecuta 2 escenarios:
+1. Sin worker IA (`default-pass-through`)
+2. Con worker externo de ejemplo (`external-worker`)

@@ -1,0 +1,1 @@
+{"id":"955b1c80-b5b7-460c-ab32-647b2575d967","status":"completed","stage":"finalizado","progress":100,"metadata":{"mode":"external-worker","workerCommand":"python3 workers/faceswap_worker.py","createdAt":"2026-03-03T21:46:31.415Z"},"createdAt":"2026-03-03T21:46:30.209Z","updatedAt":"2026-03-03T21:46:31.415Z"}
