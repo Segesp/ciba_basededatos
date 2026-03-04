@@ -1,0 +1,4 @@
+WAN_MODEL_ID=Wan-AI/Wan2.2-TI2V-5B
+WAN_PROMPT=generic portrait shot, realistic motion, looking at camera, smooth lighting
+WAN_NEGATIVE_PROMPT=blurry, artifacts, flickering, deformed face
+JOB_ID=08195a8e-1dae-4bfa-92da-f36e507a7f2c
