@@ -21,3 +21,9 @@ Prueba IA real con archivos solicitados (rama work):
 - video usado: test-results/faceswap-runtime/Download.mp4
 - output: test-results/faceswap-runtime-user-image/Resultado face.mp4 (duración: 19.033333 s)
 - modo: external-worker
+
+Prueba IA mejorada (InsightFace + InSwapper):
+- photo usada: test-results/faceswap-runtime/foto_modelo.png
+- video usado: test-results/faceswap-runtime-user-image/Download_clip8_lowfps.mp4 (clip optimizado para calidad/tiempo en CPU)
+- resultado: test-results/faceswap-runtime-user-image/Resultado face.mp4 (duración: 8.000000 s)
+- modo: external-worker

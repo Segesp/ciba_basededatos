@@ -243,11 +243,11 @@ FACESWAP_WORKER_CMD="python workers/faceswap_worker.py"
 
 El servidor le pasa un JSON con `inputPhotoPath`, `inputVideoPath` y `outputPath`.
 
-El worker incluido (`workers/faceswap_worker.py`) ahora aplica un faceswap simplificado con detección facial DNN (OpenCV) y blending por frame.
+El worker incluido (`workers/faceswap_worker.py`) ahora intenta usar **InsightFace + InSwapper** para un swap neuronal de mejor calidad (con fallback a OpenCV si falla la carga del modelo).
 
 Dependencias del worker IA:
 ```bash
-pip install opencv-python-headless numpy
+pip install insightface onnxruntime opencv-python-headless numpy
 ```
 
 
