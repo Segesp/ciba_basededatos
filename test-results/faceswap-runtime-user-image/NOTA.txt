@@ -1,0 +1,3 @@
+Se solicitó ejecutar la prueba con la imagen adjunta en el chat.
+Limitación del entorno: la imagen adjunta no se expone como archivo local accesible desde el contenedor.
+Se ejecuta la prueba runtime con el flujo actual y se dejan evidencias aquí.
