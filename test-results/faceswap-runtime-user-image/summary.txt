@@ -15,3 +15,9 @@ Prueba IA real (worker DNN OpenCV):
 - video usado: test-results/faceswap-runtime/asset-input.mp4
 - resultado: test-results/faceswap-runtime-user-image/Resultado face.mp4 (duración: 2.000000 s)
 - modo: external-worker
+
+Prueba IA real con archivos solicitados (rama work):
+- photo usada: test-results/faceswap-runtime/foto_modelo.png
+- video usado: test-results/faceswap-runtime/Download.mp4
+- output: test-results/faceswap-runtime-user-image/Resultado face.mp4 (duración: 19.033333 s)
+- modo: external-worker
