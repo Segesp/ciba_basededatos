@@ -138,7 +138,7 @@ def run_wan_ti2v(input_photo: str, input_video: str, output_video: str) -> None:
     mux_audio(raw_video, input_video, output_video)
 
     backend_marker = output_video + ".backend.txt"
-    __FIX__
+    Path(backend_marker).write_text("wan22-ti2v\n", encoding="utf-8")
 
     if os.path.exists(raw_video):
         os.remove(raw_video)
