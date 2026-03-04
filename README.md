@@ -251,6 +251,26 @@ pip install insightface onnxruntime opencv-python-headless numpy
 ```
 
 
+
+
+### Worker experimental WAN 2.2 (rama `experiment/wan22-ti2v-5b`)
+
+Se agregó un worker experimental en `workers/faceswap_worker_wan22.py` para probar **Wan-AI/Wan2.2-TI2V-5B**.
+
+> Nota: WAN 2.2 TI2V es un modelo *image+text → video*; sirve para experimentar calidad generativa, pero no reemplaza un pipeline de faceswap estricto frame-a-frame.
+
+Uso:
+```bash
+FACESWAP_WORKER_CMD="python workers/faceswap_worker_wan22.py" \
+WAN_MODEL_ID="Wan-AI/Wan2.2-TI2V-5B" \
+node server.js
+```
+
+Dependencias sugeridas para el worker WAN:
+```bash
+pip install torch diffusers transformers accelerate Pillow opencv-python-headless
+```
+
 ### Prueba runtime de FaceSwap API
 
 Para validar arranque API, uploads reales y flujo end-to-end con `ffmpeg`:
