@@ -1,0 +1,8 @@
+MODE=text-to-video via AI-generated frames
+MODEL_ID=stabilityai/sd-turbo
+PROMPT_BASE=A realistic person talking to camera, cinematic light, detailed skin, neutral background
+NEGATIVE_PROMPT=blurry, low quality, artifacts, deformed face
+FRAMES=12
+FPS=6
+STEPS_PER_FRAME=1
+ELAPSED_SECONDS=117.92
