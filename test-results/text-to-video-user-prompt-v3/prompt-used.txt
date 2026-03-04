@@ -1,0 +1,14 @@
+MODE=text-to-video via AI-generated frames
+MODEL_ID=stabilityai/sd-turbo
+PROMPT=SCENE: A messy, lived-in modern bedroom. An unmade bed in the background and a few clothes casually thrown over a chair. The environment feels authentic, slightly cluttered, and relatable.
+SUBJECT: A young woman in her early 20s. Fair skin with highly detailed micro-texture, visible pores, and slight natural peach fuzz. Round face, light-colored eyes, subtle smudged everyday makeup. She is wearing thin round dark-framed glasses. Her hair is a short brown bob with blunt bangs, straight hair covering her ears, but slightly tousled and messy. She has a pear-shaped body, curvy, wide hips, thick thighs, and a normal bust.
+OUTFIT: A white short-sleeve crop top t-shirt with a small black logo in the center, high-waisted tailored black pants with natural fabric wrinkles from moving, and chunky black loafers.
+ACTION & POSE: Candid, mid-action mirror selfie. She is standing with her weight shifted heavily onto one leg, creating a natural, asymmetrical curve in her wide hips. Her posture is slightly slouched and unposed. One hand is holding the smartphone with an awkward, realistic grip, while her other hand is caught mid-movement, casually adjusting her glasses. Her expression is distracted, with lips slightly parted, looking directly at the phone screen rather than posing for the lens.
+CAMERA & LIGHTING: Shot on an iPhone front camera reflected in a slightly dusty full-length mirror. 9:16 vertical format. Harsh phone flash fired, creating a bright specular highlight on the mirror and casting deep, hard shadows against the wall behind her. Uneven lighting typical of amateur smartphone photography.
+STYLE: Aggressive realism, authentic UGC (User Generated Content) TikTok aesthetic, candid snapshot, disposable camera vibe. No cinematic grading, no studio lighting, no perfect symmetry.
+REALISM_CONSTRAINTS: Use the uploaded image as the exact identity reference. Preserve her exact facial structure, body proportions, and identity 100%.
+NEGATIVE_PROMPT=No plastic skin, no AI glow, no over-smoothing, no studio lighting, no text, no watermarks, no exaggerated curves, no cartoon effect, no 3D render, no perfect symmetry, no stiff posing, no beauty filters.
+FRAMES=16
+FPS=6
+STEPS_PER_FRAME=1
+ELAPSED_SECONDS=310.19
