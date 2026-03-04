@@ -4,3 +4,8 @@ OK runtime faceswap API (2 escenarios)
 Resultados guardados en: test-results/faceswap-runtime-user-image
 
 Prueba PNG->video: Resultado guardado como "Resultado face.mp4" (duración: 2.000000 s)
+
+Prueba con imágenes de main:
+- photo: test-results/faceswap-runtime/Captura de pantalla 2026-02-22 184259.png
+- guía: test-results/faceswap-runtime/Image (21).png
+- output: test-results/faceswap-runtime-user-image/Resultado face.mp4 (duración: 2.000000 s)
